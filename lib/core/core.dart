@@ -1,5 +1,14 @@
+library jaguar.martini.core;
+
 import 'dart:async';
+import 'dart:convert';
 import 'package:jaguar/jaguar.dart';
+import 'package:markd/markdown.dart';
+import 'package:stream_transform/stream_transform.dart';
+import 'package:jaguar_hugo/collectors/collectors.dart';
+
+part 'metadata.dart';
+part 'processor.dart';
 
 // Serves the static site
 Future serve() async {
@@ -10,57 +19,18 @@ Future serve() async {
   await server.serve();
 }
 
-/// Reads all posts from all sources and aggregates them
-abstract class PostCollector {
-  /// performs the collection
-  Stream<CollectedPost> collect();
-}
-
-class PostMeta {
-  /// Title of the post
-  String title;
-
-  /// Description for the post
-  String description;
-
-  /// Categories
-  List<String> categories;
-
-  /// Tags
-  List<String> tags;
-
-  /// Time when the post was created
-  DateTime createdAt;
-
-  /// Is this post still a draft?
-  bool draft;
-}
-
 class CollectedPost {
   /// Metadata of the post
   PostMeta meta;
 
   /// Content of the post
-  String mdContent;
+  String content;
+
+  CollectedPost(this.meta, this.content);
 }
 
 abstract class Shortcode {
   String get name;
 
   String transform(List<String> params, String content);
-}
-
-class Engine {
-  final _shortcodes = <String, Shortcode>{};
-
-  void addShortcode(Shortcode shortcode) {
-    // TODO check name of shortcode
-
-    if (_shortcodes.containsKey(shortcode.name)) {
-      throw new ArgumentError.value(shortcode, 'shortcode',
-          'Shortcode with name ${shortcode.name} already exists!');
-    }
-
-    _shortcodes[shortcode.name] = shortcode;
-  }
 }
