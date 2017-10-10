@@ -2,4 +2,5 @@
 
 ## 0.0.1
 
-- Initial version, created by Stagehand
+- Markdown processing
+- Basic writer support
