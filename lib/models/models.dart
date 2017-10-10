@@ -1,53 +1,109 @@
 import 'package:jaguar_martini/core/core.dart';
 
-class Page {
-	/// Metadata of the page picked from front-matter
-	final PostMeta meta;
+class SinglePage {
+  /// Metadata of the page picked from front-matter
+  final PostMeta meta;
 
-	/// The processed content itself
-	final String content;
+  /// The processed content itself
+  final String content;
 
-	/// The approximate number of words in the content
-	// TODO int fuzzyWordCount;
+  final List<Tag> tags = [];
 
-	final bool isHome;
+  final List<Category> categories = [];
 
-	final Page next;
+  /// The approximate number of words in the content
+  // TODO int fuzzyWordCount;
 
-	final Page prev;
+  final bool isHome;
 
-	final Page nextInSection;
+  SinglePage next;
 
-	final Page prevInSection;
+  SinglePage prev;
 
-	// TODO Page nextInSeries;
+  SinglePage nextInSection;
 
-	// TODO Page nextInSeries;
+  SinglePage prevInSection;
 
-	// TODO pages
+  // TODO Page nextInSeries;
 
-	// TODO permalink
+  // TODO Page nextInSeries;
 
-	// TODO plain
+  // TODO pages
 
-	// TODO plain words
+  // TODO permalink
 
-	// TODO reading time
+  // TODO plain
 
-	/// The section this page belongs to
-	final Section section;
+  // TODO plain words
 
-	// TODO summary
+  // TODO reading time
 
-	// TODO table of contents
+  /// The section this page belongs to
+  final Section section;
 
-	/// The URL for the page relative to the web root. Note that a url set directly
-	/// in front matter overrides the default relative URL for the rendered page.
-	final String url;
+  // TODO summary
 
-	// TODO int wordCount
+  // TODO table of contents
+
+  /// The URL for the page relative to the web root. Note that a url set directly
+  /// in front matter overrides the default relative URL for the rendered page.
+  final String url;
+
+  // TODO int wordCount
+
+  SinglePage(
+    this.section,
+    this.meta,
+    this.content,
+    this.url, {
+    this.isHome: false,
+  });
 }
 
 class Section {
-	// TODO
+  final String name;
+
+  final List<SinglePage> pages = <SinglePage>[];
+
+  final List<Tag> tags = <Tag>[];
+
+  final List<Category> categories = <Category>[];
+
+  Section(this.name);
+}
+
+class Tag {
+	final String name;
+
+	final List<SinglePage> pages = [];
+
+	Tag(this.name);
+}
+
+class Category {
+	final String name;
+
+	final List<SinglePage> pages = [];
+
+	Category(this.name);
+}
+
+/// A page that displays list of posts
+abstract class ListPage {
+  List<SinglePage> get pages;
+
+  List<Tag> get tags;
+
+  List<Category> get categories;
+}
+
+/// Contains the data for the whole site
+class Site {
+  final Map<String, Section> sections = <String, Section>{};
+
+  final List<SinglePage> pages = <SinglePage>[];
+
+  final Map<String, Tag> tags = <String, Tag>{};
+
+  final Map<String, Category> categories = <String, Category>{};
 }

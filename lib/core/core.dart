@@ -6,6 +6,7 @@ import 'package:jaguar/jaguar.dart';
 import 'package:markd/markdown.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:jaguar_martini/collectors/collectors.dart';
+import 'package:jaguar_martini/models/models.dart';
 
 part 'metadata.dart';
 part 'processor.dart';

@@ -39,7 +39,7 @@ class DirPostCollector implements PostCollector {
       controller.close();
     });
 
-    _working = false;
+    _working = false; // TODO must also be freed when there is an exception
     return controller.stream;
   }
 

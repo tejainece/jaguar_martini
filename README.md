@@ -9,6 +9,7 @@ Jekyll and Hugo like static site generator that uses right mix of Markdown, HTML
 - [ ] Generate sections
 - [ ] Generate categories
 - [ ] Generate tags
+- [ ] Generate home page
 - [ ] Generate series
 - [ ] Word counts
 - [ ] Reading time calculation
