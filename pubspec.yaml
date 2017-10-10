@@ -1,6 +1,6 @@
-name: jaguar_hugo
+name: jaguar_martini
 description: A sample command-line application.
-version: 0.0.1
+version: 0.0.1-dev
 #homepage: https://www.example.com
 #author: SERAGUD <email@example.com>
 

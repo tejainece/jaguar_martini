@@ -10,6 +10,8 @@ class PostMeta {
   /// Description for the post
   final String description;
 
+  final String linkTitle;
+
   /// Categories
   final List<String> categories;
 
@@ -23,6 +25,13 @@ class PostMeta {
 
   /// Is this post still a draft?
   final bool draft;
+
+  /// Assigned weight (in the front matter) to this content, used in sorting.
+  final int weight;
+
+  // TODO last mod
+
+  final Map<String, dynamic> params;
 
   PostMeta(this.section, this.title, this.slugs, this.createdAt,
       {this.description, this.categories, this.tags, this.draft});

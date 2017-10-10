@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 import 'package:rate_limit/rate_limit.dart';
-import 'package:jaguar_hugo/core/core.dart';
-import 'package:jaguar_hugo/collectors/collectors.dart';
+import 'package:jaguar_martini/core/core.dart';
+import 'package:jaguar_martini/collectors/collectors.dart';
 
 /// Reads all posts from specified directory and aggregates them
 class DirPostCollector implements PostCollector {
