@@ -13,13 +13,11 @@ This is intro!
 
 Some text here.
 
-> Some blocks here
+> Some blocks here  
 > And here
 
 **Blod text here**
 
 *Itallics here*
-
-~~Strike through here~~
 
 {{< gist sdfds33432434 >}}

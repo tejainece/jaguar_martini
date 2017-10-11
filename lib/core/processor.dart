@@ -7,6 +7,8 @@ class Processor {
 
   final Writer _writer;
 
+  final cache = new InMemoryCache<Response>(null);
+
   Processor(SectionWriter fallback,
       {Map<String, SectionWriter> sectionWriters: const {},
       List<Shortcode> shortcodes: const []})
@@ -72,16 +74,22 @@ class Processor {
 
     final Site site = composer.site;
 
-    for(final Section section in site.sections.values) {
-      final SectionWriter w = _writer.sections[section.name]??_writer.fallback;
+    /// A map of URL to output
+    final outputs = <String, String>{};
+
+    for (final Section section in site.sections.values) {
+      final SectionWriter w =
+          _writer.sections[section.name] ?? _writer.fallback;
 
       // TODO Generate section list pages
 
       // Generate single pages
-      for(final SinglePage page in section.pages) {
+      for (final SinglePage page in section.pages) {
         final String html = await w.single(page);
 
         print(html);
+
+        outputs[page.meta.url] = html;
         // TODO write to cache or file system
       }
     }
@@ -93,6 +101,16 @@ class Processor {
     // TODO generate home page
 
     // TODO
+
+    cache.clear();
+
+    for (final String path in outputs.keys) {
+      cache.upsert(
+          path,
+          new Response(UTF8.encode(outputs[path]))
+            ..headers.charset = 'utf8'
+            ..headers.mimeType = 'text/html');
+    }
 
     _working = false; // TODO must also be freed when there is an exception
   }
@@ -106,39 +124,33 @@ class Processor {
     String scName;
     final List<String> scParam = <String>[];
     int i = 0;
-    String line;
-
-    bool exec() {
-      if (scName == null) {
-        if (!line.startsWith('{{<')) return false;
-        if (!line.endsWith('>}}')) return false;
-      } else {
-        if (!line.startsWith(new RegExp(r'{{<[ \t]*\\' + scName + '[ \t]*>}}')))
-          return false;
-      }
-
-      final string = lines.sublist(startIdx, i).join('\n');
-
-      if (string.isNotEmpty) {
-        if (scName == null) {
-          // Render markdown
-          outputs.add(markdownToHtml(string));
-        } else {
-          // Call shortcode
-          final sc = _shortcodes[scName];
-          outputs.add(sc.transform(scParam, string));
-        }
-      }
-
-      return false;
-    }
 
     for (; i < lines.length; i++) {
       if (startIdx == null) startIdx = i;
 
-      line = lines[i];
+      final String line = lines[i];
 
-      if (!exec()) continue;
+      if (scName == null) {
+        if (!Shortcode.isTag(line)) continue;
+
+        final string = lines.sublist(startIdx, i).join('\n');
+
+        if (string.isNotEmpty) {
+          // Render markdown
+          outputs.add(markdownToHtml(string));
+        }
+      } else {
+        // TODO Should we throw on wrong use here?
+        if (!Shortcode.isEndTagNamed(line, scName)) continue;
+
+        final string = lines.sublist(startIdx, i).join('\n');
+
+        // Call shortcode
+        final sc = _shortcodes[scName];
+        outputs.add(sc.transform(scParam, string));
+
+        continue;
+      }
 
       scName = null;
       scParam.clear();
@@ -148,10 +160,10 @@ class Processor {
 
       // TODO parse params
 
-      if (!line.endsWith('/>}}')) {
+      if (!Shortcode.isSingleLineTag(line)) {
         // Call shortcode
         final sc = _shortcodes[scName];
-        outputs.add(sc.transform(scParam, null));
+        // TODO outputs.add(sc.transform(scParam, null));
 
         scName = null;
         scParam.clear();
@@ -198,12 +210,11 @@ class Composer {
 
       final Section section = site.sections[secName];
 
-      final page =
-          new SinglePage(section, post.meta, post.content, '' /* TODO */);
+      final page = new SinglePage(section, post.meta, post.content);
       section.pages.add(page);
 
-      for(final String tagName in post.meta.tags) {
-        if(!site.tags.containsKey(tagName)) {
+      for (final String tagName in post.meta.tags) {
+        if (!site.tags.containsKey(tagName)) {
           site.tags[tagName] = new Tag(tagName);
         }
 
@@ -213,8 +224,8 @@ class Composer {
         page.tags.add(tag);
       }
 
-      for(final String catName in post.meta.categories) {
-        if(!site.tags.containsKey(catName)) {
+      for (final String catName in post.meta.categories) {
+        if (!site.tags.containsKey(catName)) {
           site.categories[catName] = new Category(catName);
         }
 

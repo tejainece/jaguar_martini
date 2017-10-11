@@ -3,6 +3,8 @@
 
 import 'dart:io';
 import 'dart:async';
+import 'package:jaguar/jaguar.dart';
+import 'package:jaguar_martini/gencon/gencon.dart';
 import 'package:jaguar_martini/jaguar_martini.dart';
 import 'package:jaguar_martini/collectors/dir.dart';
 
@@ -15,7 +17,7 @@ class FallbackWriter implements SectionWriter {
   <body>
     ${page.content}
   </body>
-</html>>
+</html>
     ''';
   }
 
@@ -34,4 +36,8 @@ main(List<String> arguments) async {
   final processor = new Processor(new FallbackWriter())
     ..add(c)
     ..start();
+
+  final jaguar = new Jaguar();
+  jaguar.addApi(new GeneratedHandler(processor));
+  await jaguar.serve();
 }

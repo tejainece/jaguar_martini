@@ -45,17 +45,12 @@ class SinglePage {
 
   // TODO table of contents
 
-  /// The URL for the page relative to the web root. Note that a url set directly
-  /// in front matter overrides the default relative URL for the rendered page.
-  final String url;
-
   // TODO int wordCount
 
   SinglePage(
     this.section,
     this.meta,
-    this.content,
-    this.url, {
+    this.content, {
     this.isHome: false,
   });
 }
@@ -73,19 +68,19 @@ class Section {
 }
 
 class Tag {
-	final String name;
+  final String name;
 
-	final List<SinglePage> pages = [];
+  final List<SinglePage> pages = [];
 
-	Tag(this.name);
+  Tag(this.name);
 }
 
 class Category {
-	final String name;
+  final String name;
 
-	final List<SinglePage> pages = [];
+  final List<SinglePage> pages = [];
 
-	Category(this.name);
+  Category(this.name);
 }
 
 /// A page that displays list of posts
