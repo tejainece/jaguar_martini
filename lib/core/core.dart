@@ -31,10 +31,79 @@ class CollectedPost {
   CollectedPost(this.meta, this.content);
 }
 
-abstract class Shortcode {
+class ShortCodeCall {
+  final String name;
+
+  final Map<String, String> values;
+
+  ShortCodeCall(this.name, this.values);
+
+  String toString() => 'ShortCodeCall($name, $values)';
+
+  static ShortCodeCall parse(String line) {
+    String core = line.substring(3, line.length - 3);
+    if(core.endsWith('/')) {
+      core = core.substring(0, core.length - 1);
+    }
+
+    core = core.trim();
+
+    final int nameIdx = core.indexOf(new RegExp('[ \t]'));
+    final String name = core.substring(0, nameIdx);
+
+    core = core.substring(nameIdx).trim();
+
+    final values = <String, String>{};
+
+    while(core.length != 0) {
+      core = findArg(core, values).trim();
+    }
+
+    return new ShortCodeCall(name, values);
+  }
+
+  static String finaArgName(String core) {
+    final Match match = new RegExp(r'([a-zA-Z0-9_]+)=').firstMatch(core);
+    if(match == null) {
+      throw new Exception('Invalid shortcode! (1)');
+    }
+
+    return match.group(1);
+  }
+
+  static String findArgValue(String core) {
+    if(core.startsWith('"')) {
+      final Match match = new RegExp(r'("[^\s]+")[\s]?').firstMatch(core);
+      if(match == null) {
+        throw new Exception('Invalid shortcode! (2)');
+      }
+
+      return match.group(1);
+    } else {
+      final Match match = new RegExp(r'([^\s]+)[\s]?').firstMatch(core);
+      if(match == null) {
+        throw new Exception('Invalid shortcode! (3)');
+      }
+
+      return match.group(1);
+    }
+  }
+
+  static String findArg(String core, Map<String, String> values) {
+    final String key = finaArgName(core);
+    core = core.substring(key.length + 1);
+    final String value = findArgValue(core);
+
+    values[key] = !value.startsWith('"')? value: value.substring(1, value.length - 1);
+
+    return core.substring(value.length);
+  }
+}
+
+abstract class ShortCode {
   String get name;
 
-  String transform(List<String> params, String content);
+  String transform(Map<String, String> params, String content);
 
   static bool isTag(String line) {
     if (!line.startsWith(r'{{<')) return false;
@@ -52,9 +121,5 @@ abstract class Shortcode {
     if (!line.endsWith('/>}}')) return false;
 
     return true;
-  }
-
-  static String getName(String line) {
-    // TODO
   }
 }

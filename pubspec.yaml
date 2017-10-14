@@ -1,6 +1,6 @@
 name: jaguar_martini
 description: Jekyll and Hugo like static site generator that uses right mix of Markdown, HTML and Dart
-version: 0.0.1-dev
+version: 0.0.2-dev
 homepage: https://github.com/tejainece/jaguar_martini
 author: Ravi Teja Gudapati <tejainece@gmail.com>
 documentation:

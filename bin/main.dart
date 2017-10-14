@@ -30,10 +30,21 @@ class FallbackWriter implements SectionWriter {
   }
 }
 
+class GistShortCode implements ShortCode {
+  final String name = 'gist';
+
+  String transform(Map<String, String> params, String content) {
+    return 'Gist with id ${params['id']}';
+  }
+
+  const GistShortCode();
+}
+
 main(List<String> arguments) async {
   final d = new Directory('./content');
   final c = new DirPostCollector(d);
   final processor = new Processor(new FallbackWriter())
+    ..addShortcode(const GistShortCode())
     ..add(c)
     ..start();
 

@@ -20,4 +20,4 @@ Some text here.
 
 *Itallics here*
 
-{{< gist sdfds33432434 >}}
+{{< gist id=sdfds33432434 />}}

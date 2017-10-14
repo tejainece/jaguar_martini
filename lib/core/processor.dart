@@ -3,7 +3,7 @@ part of jaguar.martini.core;
 class Processor {
   final List<PostCollector> _collectors = [];
 
-  final _shortcodes = <String, Shortcode>{};
+  final _shortcodes = <String, ShortCode>{};
 
   final Writer _writer;
 
@@ -11,7 +11,7 @@ class Processor {
 
   Processor(SectionWriter fallback,
       {Map<String, SectionWriter> sectionWriters: const {},
-      List<Shortcode> shortcodes: const []})
+      List<ShortCode> shortcodes: const []})
       : _writer = new Writer(fallback, sections: sectionWriters) {
     addShortcodes(shortcodes);
   }
@@ -21,12 +21,12 @@ class Processor {
   /// Adds a post collector
   void add(PostCollector c) => _collectors.add(c);
 
-  void addShortcodes(List<Shortcode> shortcodes) {
+  void addShortcodes(List<ShortCode> shortcodes) {
     for (final sc in shortcodes) addShortcode(sc);
   }
 
   /// Add shortcode processor to process shortcodes in content Markdown
-  void addShortcode(Shortcode shortcode) {
+  void addShortcode(ShortCode shortcode) {
     // TODO check name of shortcode
 
     if (_shortcodes.containsKey(shortcode.name)) {
@@ -121,8 +121,7 @@ class Processor {
     final outputs = <String>[];
 
     int startIdx = 0;
-    String scName;
-    final List<String> scParam = <String>[];
+    ShortCodeCall scc;
     int i = 0;
 
     for (; i < lines.length; i++) {
@@ -130,8 +129,8 @@ class Processor {
 
       final String line = lines[i];
 
-      if (scName == null) {
-        if (!Shortcode.isTag(line)) continue;
+      if (scc == null) {
+        if (!ShortCode.isTag(line)) continue;
 
         final string = lines.sublist(startIdx, i).join('\n');
 
@@ -141,32 +140,25 @@ class Processor {
         }
       } else {
         // TODO Should we throw on wrong use here?
-        if (!Shortcode.isEndTagNamed(line, scName)) continue;
+        if (!ShortCode.isEndTagNamed(line, scc.name)) continue;
 
         final string = lines.sublist(startIdx, i).join('\n');
 
         // Call shortcode
-        final sc = _shortcodes[scName];
-        outputs.add(sc.transform(scParam, string));
+        final sc = _shortcodes[scc.name];
+        outputs.add(sc.transform(scc.values, string));
 
         continue;
       }
 
-      scName = null;
-      scParam.clear();
-      startIdx = null;
+      scc = ShortCodeCall.parse(line);
 
-      // TODO parse name
-
-      // TODO parse params
-
-      if (!Shortcode.isSingleLineTag(line)) {
+      if (ShortCode.isSingleLineTag(line)) {
         // Call shortcode
-        final sc = _shortcodes[scName];
-        // TODO outputs.add(sc.transform(scParam, null));
+        final sc = _shortcodes[scc.name];
+        outputs.add(sc.transform(scc.values, null));
 
-        scName = null;
-        scParam.clear();
+        scc = null;
         startIdx = null;
       }
     }
