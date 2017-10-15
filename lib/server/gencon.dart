@@ -14,6 +14,10 @@ class GeneratedHandler implements RequestHandler {
 
   FutureOr<Response> handleRequest(Context ctx, {String prefix: ''}) {
     if (ctx.method != 'GET') return null;
-    return processor.cache.read(prefix + ctx.path);
+    try {
+      return processor.cache.read(prefix + ctx.path);
+    } catch(e) {
+      return null;
+    }
   }
 }

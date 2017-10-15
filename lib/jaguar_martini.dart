@@ -3,3 +3,4 @@
 
 export 'package:jaguar_martini/core/core.dart';
 export 'package:jaguar_martini/models/models.dart';
+export 'package:jaguar_martini/server/gencon.dart';
