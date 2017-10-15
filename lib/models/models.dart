@@ -1,6 +1,17 @@
-import 'package:jaguar_martini/core/core.dart';
+library jaguar.martini.models;
 
-class SinglePage {
+import 'package:meta/meta.dart';
+
+part 'post_meta.dart';
+part 'site_meta.dart';
+
+/// Interface for a page
+abstract class AnyPage {
+  Site get site;
+}
+
+/// Model for a single article
+class SinglePage implements AnyPage {
   /// Metadata of the page picked from front-matter
   final PostMeta meta;
 
@@ -14,19 +25,27 @@ class SinglePage {
   /// The approximate number of words in the content
   // TODO int fuzzyWordCount;
 
-  final bool isHome;
-
+  /// Next article in site ordered by published date
   SinglePage next;
 
+  /// Previous article in site ordered by published date
   SinglePage prev;
 
+  /// Next article in section ordered by published date
   SinglePage nextInSection;
 
+  /// Previous article in section ordered by published date
   SinglePage prevInSection;
 
+  /// Next article in series ordered by published date
+  ///
+  /// Returns null if the article is not in a section
   // TODO Page nextInSeries;
 
-  // TODO Page nextInSeries;
+  /// Previous article in series ordered by published date
+  ///
+  /// Returns null if the article is not in a section
+  // TODO Page prevInSeries;
 
   // TODO pages
 
@@ -47,58 +66,90 @@ class SinglePage {
 
   // TODO int wordCount
 
-  SinglePage(
-    this.section,
-    this.meta,
-    this.content, {
-    this.isHome: false,
-  });
+  /// The [Site] this [SinglePage] belongs to
+  Site get site => section.site;
+
+  SinglePage(this.section, this.meta, this.content);
 }
 
-class Section {
+/// Model for a page that displays list of articles
+abstract class ListPage implements AnyPage {
+  List<SinglePage> get pages;
+}
+
+class Section implements ListPage {
+  /// The [Site] this [Section] belongs to
+  final Site site;
+
+  /// Name of the section
   final String name;
 
+  /// Articles that belong to this section
   final List<SinglePage> pages = <SinglePage>[];
 
+  /// Tags in the section
   final List<Tag> tags = <Tag>[];
 
+  /// Categories in the section
   final List<Category> categories = <Category>[];
 
-  Section(this.name);
+  /// Default constructor to create an instance of [Section] with given [site]
+  /// and [name]
+  Section(this.site, this.name);
 }
 
-class Tag {
+/// Model of a page for a tag
+class Tag implements ListPage {
+  /// The [Site] this [Tag] belongs to
+  final Site site;
+
+  /// Name of the tag
   final String name;
 
+  /// Articles belonging to this tag
   final List<SinglePage> pages = [];
 
-  Tag(this.name);
+  /// Default constructor to create an instance of [Tag] with given [site]
+  /// and [name]
+  Tag(this.site, this.name);
 }
 
-class Category {
+/// Model of a page for category
+class Category implements ListPage {
+  /// The [Site] this [Category] belongs to
+  final Site site;
+
+  /// Name of the category
   final String name;
 
+  /// Articles belonging to this category
   final List<SinglePage> pages = [];
 
-  Category(this.name);
+  /// Default constructor to create an instance of [Category] with given [site]
+  /// and [name]
+  Category(this.site, this.name);
 }
 
-/// A page that displays list of posts
-abstract class ListPage {
-  List<SinglePage> get pages;
+/// Model of the whole site
+class Site implements AnyPage {
+  /// Site meta data
+  final SiteMetaData meta;
 
-  List<Tag> get tags;
-
-  List<Category> get categories;
-}
-
-/// Contains the data for the whole site
-class Site {
+  /// Models of sections in the site
   final Map<String, Section> sections = <String, Section>{};
 
+  /// Model of all articles in the site
   final List<SinglePage> pages = <SinglePage>[];
 
+  /// Model for all tags in the site
   final Map<String, Tag> tags = <String, Tag>{};
 
+  /// Model for all categories in the site
   final Map<String, Category> categories = <String, Category>{};
+
+  /// Default constructor to create an instance of [Site] with given [meta]
+  Site(this.meta);
+
+  /// A dummy to comply to [AnyPage] interface
+  Site get site => this;
 }

@@ -1,5 +1,6 @@
 title: 'Post 1'
 categories: ['Cat1', 'Cat2']
+tags: ['tag1', 'tag2']
 description: 'This is post1'
 +++
 

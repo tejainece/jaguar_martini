@@ -4,11 +4,16 @@ Jekyll and Hugo like static site generator that uses right mix of Markdown, HTML
 
 # Roadmap
 
-- [ ] Generate single pages
-- [ ] Generate lists
-- [ ] Generate sections
-- [ ] Generate categories
-- [ ] Generate tags
+## High priority
+- [ ] Permalink
+
+## On the loop
+- [x] Generate single pages
+- [X] Generate lists
+- [X] Generate sections
+- [X] Generate categories
+- [X] Generate tags
+- [ ] List page pagination
 - [ ] Generate home page
 - [ ] Generate series
 - [ ] Word counts

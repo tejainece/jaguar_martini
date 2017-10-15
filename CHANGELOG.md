@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.3
+
+- List page generation
+
 ## 0.0.2
 
 - Shortcode parsing

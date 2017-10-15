@@ -9,7 +9,9 @@ class Processor {
 
   final cache = new InMemoryCache<Response>(null);
 
-  Processor(SectionWriter fallback,
+  final SiteMetaData siteMeta;
+
+  Processor(this.siteMeta, SectionWriter fallback,
       {Map<String, SectionWriter> sectionWriters: const {},
       List<ShortCode> shortcodes: const []})
       : _writer = new Writer(fallback, sections: sectionWriters) {
@@ -54,7 +56,7 @@ class Processor {
     while (_working) await new Future.delayed(new Duration(milliseconds: 500));
     _working = true;
 
-    final composer = new Composer();
+    final composer = new Composer(siteMeta);
 
     for (final c in _collectors) {
       final s = await c.collect();
@@ -81,26 +83,47 @@ class Processor {
       final SectionWriter w =
           _writer.sections[section.name] ?? _writer.fallback;
 
-      // TODO Generate section list pages
+      // Generate section list pages
+      final List<String> html = await _writer.fallback.list(section);
+      if (html.length > 0) {
+        outputs['/${section.name}'] = html.first;
+        for (int i = 0; i < html.length; i++) {
+          outputs['/${section.name}/page/${i+1}'] = html[i];
+        }
+      }
 
       // Generate single pages
       for (final SinglePage page in section.pages) {
         final String html = await w.single(page);
-
-        print(html);
-
         outputs[page.meta.url] = html;
-        // TODO write to cache or file system
       }
     }
 
-    // TODO generate tag list pages
+    // Generate tag list pages for site
+    for (String tagName in site.tags.keys) {
+      final Tag tag = site.tags[tagName];
+      final List<String> html = await _writer.fallback.list(tag);
+      if (html.length > 0) {
+        outputs['/tags/${tagName}'] = html.first;
+        for (int i = 0; i < html.length; i++) {
+          outputs['/tags/${tagName}/page/${i+1}'] = html[i];
+        }
+      }
+    }
 
-    // TODO generate category list pages
+    // Generate category list pages for site
+    for (String catName in site.categories.keys) {
+      final Category cat = site.categories[catName];
+      final List<String> html = await _writer.fallback.list(cat);
+      if (html.length > 0) {
+        outputs['/categories/${catName}'] = html.first;
+        for (int i = 0; i < html.length; i++) {
+          outputs['/categories/${catName}/page/${i+1}'] = html[i];
+        }
+      }
+    }
 
     // TODO generate home page
-
-    // TODO
 
     cache.clear();
 
@@ -164,78 +187,5 @@ class Processor {
     }
 
     return outputs.join('\n');
-  }
-}
-
-class Writer {
-  /// Fallback section renderer
-  ///
-  /// Used when [sections] does not have an entry for the rendered section
-  final SectionWriter fallback;
-
-  final Map<String, SectionWriter> sections;
-
-  Writer(this.fallback, {this.sections: const {}});
-}
-
-abstract class SectionWriter {
-  /// Renders single pages of the section
-  FutureOr<String> single(SinglePage page);
-
-  /// Renders list pages of the section
-  ///
-  /// List pages include
-  FutureOr<String> list(ListPage page);
-}
-
-/// Receives a [Stream] of [CollectedPost]s and builds the site model from it
-class Composer {
-  final site = new Site();
-
-  Future stream(Stream<CollectedPost> posts) async {
-    await for (final CollectedPost post in posts) {
-      final secName = post.meta.section;
-
-      if (!site.sections.containsKey(secName)) {
-        site.sections[secName] = new Section(secName);
-      }
-
-      final Section section = site.sections[secName];
-
-      final page = new SinglePage(section, post.meta, post.content);
-      section.pages.add(page);
-
-      for (final String tagName in post.meta.tags) {
-        if (!site.tags.containsKey(tagName)) {
-          site.tags[tagName] = new Tag(tagName);
-        }
-
-        final Tag tag = site.tags[tagName];
-
-        tag.pages.add(page);
-        page.tags.add(tag);
-      }
-
-      for (final String catName in post.meta.categories) {
-        if (!site.tags.containsKey(catName)) {
-          site.categories[catName] = new Category(catName);
-        }
-
-        final Category cat = site.categories[catName];
-
-        cat.pages.add(page);
-        page.categories.add(cat);
-      }
-
-      // TODO
-    }
-
-    // TODO sort pages in site
-
-    // TODO sort pages in section
-
-    // TODO sort pages in tags
-
-    // TODO sort pages in categories
   }
 }

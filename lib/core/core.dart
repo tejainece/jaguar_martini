@@ -9,8 +9,9 @@ import 'package:stream_transform/stream_transform.dart';
 import 'package:jaguar_martini/collectors/collectors.dart';
 import 'package:jaguar_martini/models/models.dart';
 
-part 'metadata.dart';
+part 'composer.dart';
 part 'processor.dart';
+part 'writer.dart';
 
 // Serves the static site
 Future serve() async {
