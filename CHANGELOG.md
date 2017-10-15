@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.4
+
+- Experimenting with static file serving
+
 ## 0.0.3
 
 - List page generation
