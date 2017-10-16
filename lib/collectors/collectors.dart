@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:jaguar_martini/core/core.dart';
+import 'package:jaguar_martini/jaguar_martini.dart';
 
 /// Reads all posts from all sources and aggregates them
 abstract class PostCollector {

@@ -1,79 +1,103 @@
 part of jaguar.martini.models;
 
 class PostMeta {
-	// The section the post is in
-	final String section;
+  // The section the post is in
+  final String section;
 
-	/// Title of the post
-	final String title;
+  /// Title of the post
+  final String title;
 
-	/// Description for the post
-	final String description;
+  /// Description for the post
+  final String description;
 
-	final String linkTitle;
+  final String linkTitle;
 
-	/// The URL for the page relative to the web root. Note that a url set directly
-	/// in front matter overrides the default relative URL for the rendered page.
-	final String url;
+  final String permalink;
 
-	/// Categories
-	final List<String> categories;
+  /// The URL for the page relative to the web root. Note that a url set directly
+  /// in front matter overrides the default relative URL for the rendered page.
+  final String url;
 
-	/// Tags
-	final List<String> tags;
+  /// Categories
+  final List<String> categories;
 
-	final List<String> slugs;
+  /// Tags
+  final List<String> tags;
 
-	/// Time when the post was created
-	final DateTime createdAt;
+  final List<String> slugs;
 
-	/// Is this post still a draft?
-	final bool draft;
+  /// Time when the post was created
+  final DateTime date;
 
-	/// Assigned weight (in the front matter) to this content, used in sorting.
-	final int weight;
+  /// Is this post still a draft?
+  final bool draft;
 
-	// TODO revisions
+  /// Assigned weight (in the front matter) to this content, used in sorting.
+  final int weight;
 
-	final Map<String, dynamic> params;
+  // TODO revisions
 
-	PostMeta(this.section, this.title, this.slugs, this.createdAt,
-			{this.description,
-				this.linkTitle,
-				this.url,
-				this.categories,
-				this.tags,
-				this.draft,
-				this.weight,
-				this.params});
+  final Map<String, dynamic> params;
 
-	factory PostMeta.yaml(
-			String section, Map<String, dynamic> yaml, List<String> slugs) {
-		final String title = yaml['title'];
-		final String description = yaml['description'];
-		final List<String> categories = yaml['categories'];
-		final List<String> tags = yaml['tags'];
-		final String slug = yaml['slug'];
-		final String url = yaml['url'];
-		final DateTime createdAt = yaml['createdAt'];
-		final bool draft = yaml['draft'];
-		final String linkTitle = yaml['linkTitle'];
-		final int weight = int.parse(yaml['weight'] ?? '', onError: (_) => null);
+  PostMeta(this.section, this.title, this.slugs, this.date,
+      {this.description,
+      this.linkTitle,
+      this.permalink,
+      this.url,
+      this.categories,
+      this.tags,
+      this.draft,
+      this.weight,
+      this.params});
 
-		// TODO check types of these
+  factory PostMeta.yaml(
+      String section, Map<String, dynamic> yaml, List<String> slugs) {
+    final String title = yaml['title'];
+    final String description = yaml['description'];
+    final List<String> categories = yaml['categories'];
+    final List<String> tags = yaml['tags'];
+    final String slug = yaml['slug'];
+    final String url = yaml['url'];
+    final String permalink = yaml['permalink'];
+    final String date = yaml['date'];
+    final bool draft = yaml['draft'];
+    final String linkTitle = yaml['linkTitle'];
+    final int weight = int.parse(yaml['weight'] ?? '', onError: (_) => null);
 
-		if (slug is String) {
-			slugs = slug.split('/');
-		}
+    // TODO check types of these
 
-		// TODO params
-		return new PostMeta(section, title, slugs, createdAt ?? new DateTime.now(),
-				description: description ?? '',
-				linkTitle: linkTitle,
-				url: url ?? ('/' + (slugs.join('/') + '.html')),
-				categories: categories ?? <String>[],
-				tags: tags ?? <String>[],
-				draft: draft ?? true,
-				weight: weight);
-	}
+    if (slug is String) {
+      slugs = slug.split('/');
+    }
+
+    DateTime parsedDate = new DateTime.now();
+    if (date is String) {
+      try {
+        parsedDate = DateTime.parse(yaml['date']);
+      } catch (e) {
+        // Do nothing!
+      }
+    }
+
+    // TODO params
+    return new PostMeta(section, title, slugs, parsedDate,
+        description: description ?? '',
+        linkTitle: linkTitle,
+        url: url,
+        permalink: permalink,
+        categories: categories ?? <String>[],
+        tags: tags ?? <String>[],
+        draft: draft ?? true,
+        weight: weight);
+  }
+}
+
+class CollectedPost {
+  /// Metadata of the post
+  PostMeta meta;
+
+  /// Content of the post
+  String content;
+
+  CollectedPost(this.meta, this.content);
 }

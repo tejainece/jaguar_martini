@@ -11,7 +11,7 @@ import 'logic/shortcodes/gist.dart';
 import 'logic/layouts/layouts.dart';
 
 const siteMeta = const SiteMetaData(
-    title: 'Geek went freak!', baseURL: 'http://localhost:8080/');
+    title: 'Geek went freak!', baseURL: 'http://localhost:8080');
 
 main(List<String> arguments) async {
   final postCollector = new DirPostCollector(new Directory('./content'));

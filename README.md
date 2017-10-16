@@ -15,7 +15,6 @@ Jekyll and Hugo like static site generator that uses right mix of Markdown, HTML
 - [X] Generate tags
 - [ ] List page pagination
 - [ ] Generate home page
-- [ ] Generate series
 - [ ] Word counts
 - [ ] Reading time calculation
 - [ ] Post summary
@@ -24,3 +23,4 @@ Jekyll and Hugo like static site generator that uses right mix of Markdown, HTML
 - [ ] Multiple output formats
 - [ ] Translation
 - [ ] Slide show generation
+- [ ] Generate series

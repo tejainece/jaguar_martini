@@ -3,12 +3,12 @@
 
 // import 'package:jaguar_martini/jaguar_martini.dart';
 import 'package:test/test.dart';
-import 'package:jaguar_martini/server/gencon.dart';
+import 'package:path/path.dart' as p;
 
 void main() {
   group('PathTree', () {
     test('calculate', () {
-
+      print(p.url.join(p.url.separator, 'tags', 'arm'));
     });
   });
 }

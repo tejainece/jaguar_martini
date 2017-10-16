@@ -29,8 +29,6 @@ class Processor {
 
   /// Add shortcode processor to process shortcodes in content Markdown
   void addShortcode(ShortCode shortcode) {
-    // TODO check name of shortcode
-
     if (_shortcodes.containsKey(shortcode.name)) {
       throw new ArgumentError.value(shortcode, 'shortcode',
           'Shortcode with name ${shortcode.name} already exists!');
@@ -62,12 +60,7 @@ class Processor {
       final s = await c.collect();
 
       final posts = await s.map((CollectedPost p) {
-        print(p.meta.section);
-        print(p.meta.slugs);
-        print(p.content);
-
         p.content = renderMarkdown(p.content);
-
         return p;
       });
 
@@ -88,14 +81,14 @@ class Processor {
       if (html.length > 0) {
         outputs['/${section.name}'] = html.first;
         for (int i = 0; i < html.length; i++) {
-          outputs['/${section.name}/page/${i+1}'] = html[i];
+          outputs['${section.permalinkRel}/page/${i+1}'] = html[i];
         }
       }
 
       // Generate single pages
       for (final SinglePage page in section.pages) {
         final String html = await w.single(page);
-        outputs[page.meta.url] = html;
+        outputs[page.permalinkRel] = html;
       }
     }
 
@@ -106,7 +99,7 @@ class Processor {
       if (html.length > 0) {
         outputs['/tags/${tagName}'] = html.first;
         for (int i = 0; i < html.length; i++) {
-          outputs['/tags/${tagName}/page/${i+1}'] = html[i];
+          outputs['${tag.permalinkRel}/page/${i+1}'] = html[i];
         }
       }
     }
@@ -118,7 +111,7 @@ class Processor {
       if (html.length > 0) {
         outputs['/categories/${catName}'] = html.first;
         for (int i = 0; i < html.length; i++) {
-          outputs['/categories/${catName}/page/${i+1}'] = html[i];
+          outputs['${cat.permalinkRel}/page/${i+1}'] = html[i];
         }
       }
     }
@@ -153,7 +146,7 @@ class Processor {
       final String line = lines[i];
 
       if (scc == null) {
-        if (!ShortCode.isTag(line)) continue;
+        if (!ShortCodeParser.isTag(line)) continue;
 
         final string = lines.sublist(startIdx, i).join('\n');
 
@@ -163,7 +156,7 @@ class Processor {
         }
       } else {
         // TODO Should we throw on wrong use here?
-        if (!ShortCode.isEndTagNamed(line, scc.name)) continue;
+        if (!ShortCodeParser.isEndTagNamed(line, scc.name)) continue;
 
         final string = lines.sublist(startIdx, i).join('\n');
 
@@ -174,9 +167,9 @@ class Processor {
         continue;
       }
 
-      scc = ShortCodeCall.parse(line);
+      scc = ShortCodeParser.parse(line);
 
-      if (ShortCode.isSingleLineTag(line)) {
+      if (ShortCodeParser.isSingleLineTag(line)) {
         // Call shortcode
         final sc = _shortcodes[scc.name];
         outputs.add(sc.transform(scc.values, null));

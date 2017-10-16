@@ -1,37 +1,54 @@
 part of jaguar.martini.models;
 
 class SiteMetaData {
-	final String title;
+  /// Title of the site
+  final String title;
 
-	final String baseURL;
+  /// Description of the site
+  final String description;
 
-	final List<String> authors;
+  /// Base URL of the site
+  final String baseURL;
 
-	final String copyright;
+  /// Authors of the site
+  final List<String> authors;
 
-	final Map<String, dynamic> params;
+  /// Copyright of the site
+  final String copyright;
 
-	const SiteMetaData(
-			{@required this.title,
-				@required this.baseURL,
-				this.authors: const <String>[],
-				this.copyright,
-				this.params: const <String, dynamic>{}});
+  /// Default permalink format
+  final String permalink;
 
-	factory SiteMetaData.yaml(Map<String, dynamic> yaml) {
-		final String title = yaml['title'];
-		String baseURL = yaml['baseURL'];
-		List<String> authors = yaml['authors'] ?? <String>[];
-		String copyright = yaml['copyright'];
-		Map<String, dynamic> params = yaml['params'] ?? <String, dynamic>{};
+  /// Permalink format per section
+  final Map<String, String> sectionPermalinks;
 
-		// TODO validate
+  /// Additional params
+  final Map<String, dynamic> params;
 
-		return new SiteMetaData(
-				title: title,
-				baseURL: baseURL,
-				authors: authors,
-				copyright: copyright,
-				params: params);
-	}
+  const SiteMetaData(
+      {@required this.title,
+      @required this.baseURL,
+      this.description,
+      this.authors: const <String>[],
+      this.copyright,
+      this.permalink,
+      this.sectionPermalinks: const {},
+      this.params: const <String, dynamic>{}});
+
+  factory SiteMetaData.yaml(Map<String, dynamic> yaml) {
+    final String title = yaml['title'];
+    String baseURL = yaml['baseURL'];
+    List<String> authors = yaml['authors'] ?? <String>[];
+    String copyright = yaml['copyright'];
+    Map<String, dynamic> params = yaml['params'] ?? <String, dynamic>{};
+
+    // TODO validate
+
+    return new SiteMetaData(
+        title: title,
+        baseURL: baseURL,
+        authors: authors,
+        copyright: copyright,
+        params: params);
+  }
 }

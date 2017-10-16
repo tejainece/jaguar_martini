@@ -6,6 +6,4 @@ library jaguar.martini.cli;
 ///
 /// 1) serve
 /// 2) build
-class MartiniCli {
-
-}
+class MartiniCli {}

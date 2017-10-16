@@ -16,7 +16,7 @@ class GeneratedHandler implements RequestHandler {
     if (ctx.method != 'GET') return null;
     try {
       return processor.cache.read(prefix + ctx.path);
-    } catch(e) {
+    } catch (e) {
       return null;
     }
   }

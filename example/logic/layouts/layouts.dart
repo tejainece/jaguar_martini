@@ -1,38 +1,37 @@
-
 import 'dart:async';
 import 'package:stencil/stencil.dart';
 import 'package:jaguar_martini/jaguar_martini.dart';
 
 class HeadComp extends Component {
-	final AnyPage page;
+  final AnyPage page;
 
-	HeadComp(this.page);
+  HeadComp(this.page);
 
-	Site get site => page.site;
+  Site get site => page.site;
 
-	String get title {
-		if (page is SinglePage) {
-			return (page as SinglePage).meta.title + ': ' + site.meta.title;
-		} else if (page is Tag) {
-			return (page as Tag).name + ': ' + site.meta.title;
-		} else if (page is Category) {
-			return (page as Category).name + ': ' + site.meta.title;
-		} else if (page is Section) {
-			return (page as Section).name + ': ' + site.meta.title;
-		} else if (page is Site) {
-			return (page as Site).meta.title;
-		}
-		throw new UnsupportedError('Unsupported list page!');
-	}
+  String get title {
+    if (page is SinglePage) {
+      return (page as SinglePage).meta.title + ': ' + site.meta.title;
+    } else if (page is Tag) {
+      return (page as Tag).name + ': ' + site.meta.title;
+    } else if (page is Category) {
+      return (page as Category).name + ': ' + site.meta.title;
+    } else if (page is Section) {
+      return (page as Section).name + ': ' + site.meta.title;
+    } else if (page is Site) {
+      return (page as Site).meta.title;
+    }
+    throw new UnsupportedError('Unsupported list page!');
+  }
 
-	String render() {
-		return '''
+  String render() {
+    return '''
 <head>
     <title>$title</title>
     <meta property='og:title' content="$title">
     <meta property="og:type" content="${page is Site? 'website': 'article'}">
     ${when(page is SinglePage, () => '<meta name="description" content="${(page as SinglePage).meta.description}">')}
-    <!-- TODO meta og:url -->
+    <meta property="og:url" content="${page.permalink}">
     <!-- TODO meta og:image -->
 
     <meta charset="utf-8">
@@ -49,9 +48,9 @@ class HeadComp extends Component {
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
     <!-- My stylesheets -->
-    <link rel="stylesheet" href="${site.meta.baseURL}static/css/prettify_own.css">
-    <link rel="stylesheet" href="${site.meta.baseURL}static/css/styles.css">
-    <link rel="stylesheet" href="${site.meta.baseURL}static/css/custom.css">
+    <link rel="stylesheet" href="${site.meta.baseURL}/static/css/prettify_own.css">
+    <link rel="stylesheet" href="${site.meta.baseURL}/static/css/styles.css">
+    <link rel="stylesheet" href="${site.meta.baseURL}/static/css/custom.css">
     <!-- My RSS -->
     <link rel="alternate" type="application/rss+xml" title="RSS" href="${site.meta.baseURL}/index.xml">
 
@@ -59,46 +58,46 @@ class HeadComp extends Component {
     <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=dart&lang=go&lang=css&lang=swift&lang=vhdl&lang=yaml"></script>
 </head>
     ''';
-	}
+  }
 }
 
 class PaginationInfo {
-	final int number;
+  final int number;
 
-	final int itemsPerPage;
+  final int itemsPerPage;
 
-	final itemsInThisPage;
+  final itemsInThisPage;
 
-	PaginationInfo(this.itemsPerPage, this.number, this.itemsInThisPage);
+  PaginationInfo(this.itemsPerPage, this.number, this.itemsInThisPage);
 
-	int get start => (number - 1) * itemsPerPage;
+  int get start => (number - 1) * itemsPerPage;
 
-	int get end => start + itemsInThisPage;
+  int get end => start + itemsInThisPage;
 }
 
 class ArticleListPageComp extends Component {
-	final ListPage page;
+  final ListPage page;
 
-	final PaginationInfo paginationInfo;
+  final PaginationInfo paginationInfo;
 
-	ArticleListPageComp(this.page, this.paginationInfo);
+  ArticleListPageComp(this.page, this.paginationInfo);
 
-	Site get site => page.site;
+  Site get site => page.site;
 
-	String get heading {
-		if (page is Tag) {
-			return (page as Tag).name;
-		} else if (page is Category) {
-			return (page as Category).name;
-		} else if (page is Section) {
-			return (page as Section).name;
-		}
-		throw new UnsupportedError('Unsupported list page!');
-	}
+  String get heading {
+    if (page is Tag) {
+      return (page as Tag).name;
+    } else if (page is Category) {
+      return (page as Category).name;
+    } else if (page is Section) {
+      return (page as Section).name;
+    }
+    throw new UnsupportedError('Unsupported list page!');
+  }
 
-	@override
-	String render() {
-		return '''
+  @override
+  String render() {
+    return '''
 <html>
   ${comp(new HeadComp(page))}
 
@@ -116,7 +115,7 @@ class ArticleListPageComp extends Component {
         <div class="col-sm-9">
           <div class="articles">
             ${range(paginationInfo.start, paginationInfo.end,
-						(i) => new ArticleInListComp(page.pages[i]).render())}
+								(i) => new ArticleInListComp(page.pages[i]).render())}
           </div>
 
           <!-- TODO {{ partial "pagination.html" . }} -->
@@ -133,17 +132,17 @@ class ArticleListPageComp extends Component {
   </body>
 </html>
     ''';
-	}
+  }
 }
 
 class ArticleInListComp extends Component {
-	final SinglePage page;
+  final SinglePage page;
 
-	ArticleInListComp(this.page);
+  ArticleInListComp(this.page);
 
-	@override
-	String render() {
-		return '''
+  @override
+  String render() {
+    return '''
 <article class="single" itemscope="itemscope" itemtype="http://schema.org/Article">
   <header class="article-header">
     <!-- TODO published date
@@ -153,7 +152,7 @@ class ArticleInListComp extends Component {
     </time>
     -->
     <h1 class="article-title">
-      <a href="{{ .Permalink }}">${page.meta.title}</a>
+      <a href="${page.permalink}">${page.meta.title}</a>
     </h1>
   </header>
 
@@ -167,13 +166,13 @@ class ArticleInListComp extends Component {
 
 </article>
     ''';
-	}
+  }
 }
 
 class FallbackWriter implements SectionWriter {
-	/// Renders single pages of the section
-	FutureOr<String> single(SinglePage page) {
-		return '''
+  /// Renders single pages of the section
+  FutureOr<String> single(SinglePage page) {
+    return '''
 <html>
   ${new HeadComp(page).render()}
   <body>
@@ -181,24 +180,24 @@ class FallbackWriter implements SectionWriter {
   </body>
 </html>
     ''';
-	}
+  }
 
-	/// Renders list pages of the section
-	///
-	/// List pages include
-	FutureOr<List<String>> list(ListPage page) {
-		final int articlesPerPage = 10;
-		final ret = <String>[];
-		for (int i = 0; i < page.pages.length; i += articlesPerPage) {
-			final int pageNum = (i ~/ articlesPerPage) + 1;
-			int itemsInThisPage = articlesPerPage;
-			if ((i + itemsInThisPage) > page.pages.length) {
-				itemsInThisPage = page.pages.length % articlesPerPage;
-			}
-			final paginationInfo =
-			new PaginationInfo(articlesPerPage, pageNum, itemsInThisPage);
-			ret.add(new ArticleListPageComp(page, paginationInfo).render());
-		}
-		return ret;
-	}
+  /// Renders list pages of the section
+  ///
+  /// List pages include
+  FutureOr<List<String>> list(ListPage page) {
+    final int articlesPerPage = 10;
+    final ret = <String>[];
+    for (int i = 0; i < page.pages.length; i += articlesPerPage) {
+      final int pageNum = (i ~/ articlesPerPage) + 1;
+      int itemsInThisPage = articlesPerPage;
+      if ((i + itemsInThisPage) > page.pages.length) {
+        itemsInThisPage = page.pages.length % articlesPerPage;
+      }
+      final paginationInfo =
+          new PaginationInfo(articlesPerPage, pageNum, itemsInThisPage);
+      ret.add(new ArticleListPageComp(page, paginationInfo).render());
+    }
+    return ret;
+  }
 }
