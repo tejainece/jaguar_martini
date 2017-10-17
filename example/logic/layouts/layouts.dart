@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:stencil/stencil.dart';
 import 'package:jaguar_martini/jaguar_martini.dart';
+import 'package:intl/intl.dart';
 
 class HeadComp extends Component {
   final AnyPage page;
@@ -120,12 +121,9 @@ class ArticleListPageComp extends Component {
 
           <!-- TODO {{ partial "pagination.html" . }} -->
         </div>
-
-        <!-- TODO sidebar
         <div class="col-sm-3 sidebar">
-          {{ partial "sidebar.html" . }}
+          ${comp(new SidebarComp(page))}
         </div>
-        -->
       </div>
     </div>
     <!-- TODO {{ partial "default_foot.html" . }} -->
@@ -134,6 +132,8 @@ class ArticleListPageComp extends Component {
     ''';
   }
 }
+
+final DateFormat dateFormatter = new DateFormat('EEE, MMM d, yyyy');
 
 class ArticleInListComp extends Component {
   final SinglePage page;
@@ -145,12 +145,10 @@ class ArticleInListComp extends Component {
     return '''
 <article class="single" itemscope="itemscope" itemtype="http://schema.org/Article">
   <header class="article-header">
-    <!-- TODO published date
     <time itemprop="datePublished" pubdate="pubdate"
-                  datetime="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">
-      {{ with .Site.Params.DateForm }}{{ .Date.Format . }}{{ else }}{{ .Date.Format "Mon, Jan 2, 2006" }}{{ end }}
+                  datetime="${page.meta.date.toString()}">
+      ${dateFormatter.format(page.meta.date)}
     </time>
-    -->
     <h1 class="article-title">
       <a href="${page.permalink}">${page.meta.title}</a>
     </h1>
@@ -158,14 +156,62 @@ class ArticleInListComp extends Component {
 
   <div class="article-body" itemprop="articleBody">${page.content}</div>
 
-  <!-- TODO tags
   <aside>
-    {{ with .Params.tags }}<div class="section">{{ range . }}<a href="{{ .Site.BaseURL}}tags/{{ . }}" class="tag">{{ . }}</a> {{ end }}</div>{{ end }}
+    <div class="section">
+      ${forEach(page.tags, (Tag t) => '<a href="${t.permalink}" class="tag">${t.name}</a>')}
+    </div>
   </aside>
-  -->
-
 </article>
     ''';
+  }
+}
+
+class SidebarComp extends Component {
+  final AnyPage page;
+
+  SidebarComp(this.page);
+
+  @override
+  String render() {
+    return '''
+<aside class="site">
+	<div class="section">
+	  <header><div class="title">LatestPosts</div></header>
+	  <div class="content">
+	    ${forEach(page.site.pages.take(10), (SinglePage p) => '''
+	    <div class="sm">
+		    <article class="li">
+				  <a href="${p.permalink}" class="clearfix">
+				    <div class="detail">
+				      <time>${dateFormatter.format(p.meta.date)}</time>
+				      <h2 class="title">${p.meta.title}</h2>
+				    </div>
+				  </a>
+				</article>
+	    </div>
+	    ''')}
+	  </div>
+	</div>
+
+	<div class="section">
+	  <header><div class="title">Categories</div></header>
+	  <div class="content">
+	    ${forEach(page.site.categories.values, (Category c) => '''
+	    <a href="${c.permalink}">${c.name}</a>
+	    ''')}
+	  </div>
+	</div>
+
+	<div class="section taxonomies">
+	  <header><div class="title">Tags</div></header>
+	  <div class="content">
+	    ${forEach(page.site.tags.values.take(10), (Tag t) => '''
+	    <a href="${t.permalink}">${t.name}</a>
+	    ''')}
+	  </div>
+	</div>
+</aside>
+		''';
   }
 }
 

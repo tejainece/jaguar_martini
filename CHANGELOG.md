@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.6
+
+- Page sorting (Untested)
+
 ## 0.0.5
 
 - Permalinks

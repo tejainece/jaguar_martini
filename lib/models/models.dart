@@ -183,6 +183,12 @@ class SinglePage extends AnyPage {
     'November',
     'December'
   ];
+
+  static int compare(SinglePage a, SinglePage b) =>
+      a.meta.date.compareTo(b.meta.date);
+
+  static int compareAlphabetic(SinglePage a, SinglePage b) =>
+      a.meta.title.compareTo(b.meta.title);
 }
 
 /// Model for a page that displays list of articles

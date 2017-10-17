@@ -4,6 +4,10 @@ part of jaguar.martini.core;
 ///
 /// Composer composes the site hierarchy from the posts
 class Composer {
+  /// The site this [Composer] composes
+  ///
+  /// This is the output of the composer. It is ready when the [stream] method
+  /// returns
   final Site site;
 
   Composer(SiteMetaData siteMeta) : site = new Site(siteMeta);
@@ -19,6 +23,7 @@ class Composer {
       final Section section = site.sections[secName];
 
       final page = new SinglePage(section, post.meta, post.content);
+      site.pages.add(page);
       section.pages.add(page);
 
       for (final String tagName in post.meta.tags) {
@@ -44,22 +49,22 @@ class Composer {
       }
     }
 
-    // TODO Sort pages in site
-    site.pages.sort();
+    // Sort pages in site
+    site.pages.sort(SinglePage.compare);
 
-    // TODO Sort pages in section
+    // Sort pages in section
     for (Section section in site.sections.values) {
-      section.pages.sort();
+      section.pages.sort(SinglePage.compare);
     }
 
-    // TODO Sort pages in tags
+    // Sort pages in tags
     for (Tag tag in site.tags.values) {
-      tag.pages.sort();
+      tag.pages.sort(SinglePage.compare);
     }
 
-    // TODO Sort pages in categories
+    // Sort pages in categories
     for (Category cat in site.categories.values) {
-      cat.pages.sort();
+      cat.pages.sort(SinglePage.compare);
     }
   }
 }
