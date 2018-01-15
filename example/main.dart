@@ -3,7 +3,6 @@
 
 import 'dart:io';
 import 'package:jaguar/jaguar.dart';
-import 'package:jaguar_static_file/jaguar_static_file.dart';
 import 'package:jaguar_martini/jaguar_martini.dart';
 import 'package:jaguar_martini/collectors/dir.dart';
 
@@ -11,7 +10,7 @@ import 'logic/shortcodes/gist.dart';
 import 'logic/layouts/layouts.dart';
 
 const siteMeta = const SiteMetaData(
-    title: 'Geek went freak!', baseURL: 'http://localhost:8080');
+    title: 'Geek went freak!', baseURL: 'http://localhost:8000');
 
 main(List<String> arguments) async {
   final postCollector = new DirPostCollector(new Directory('./content'));
@@ -20,8 +19,8 @@ main(List<String> arguments) async {
     ..add(postCollector)
     ..start();
 
-  final jaguar = new Jaguar();
+  final jaguar = new Jaguar(port: 8000);
   jaguar.addApi(new GeneratedHandler(processor));
-  jaguar.addApi(new StaticFileHandler('/static/*', new Directory('./static')));
+  jaguar.staticFiles('/static/*', new Directory('./static'));
   await jaguar.serve();
 }
