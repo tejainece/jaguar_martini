@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.7
+
++ Home page
+
 ## 0.0.6
 
 - Page sorting (Untested)

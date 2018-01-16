@@ -5,7 +5,7 @@ class Processor {
 
   final _shortcodes = <String, ShortCode>{};
 
-  final Writer _writer;
+  final Writer writer;
 
   final cache = new InMemoryCache<Response>(null);
 
@@ -14,7 +14,7 @@ class Processor {
   Processor(this.siteMeta, SectionWriter fallback,
       {Map<String, SectionWriter> sectionWriters: const {},
       List<ShortCode> shortcodes: const []})
-      : _writer = new Writer(fallback, sections: sectionWriters) {
+      : writer = new Writer(fallback, sections: sectionWriters) {
     addShortcodes(shortcodes);
   }
 
@@ -72,30 +72,32 @@ class Processor {
     /// A map of URL to output
     final outputs = <String, String>{};
 
+    // Render section
     for (final Section section in site.sections.values) {
-      final SectionWriter w =
-          _writer.sections[section.name] ?? _writer.fallback;
-
       // Generate section list pages
-      final List<String> html = await _writer.fallback.list(section);
+      final List<String> html = await writer.renderSectionIndex(section);
       if (html.length > 0) {
         outputs['/${section.name}'] = html.first;
         for (int i = 0; i < html.length; i++) {
-          outputs['${section.permalinkRel}/page/${i+1}'] = html[i];
+          outputs['${section.permalinkRel}/page/${i+1}.html'] = html[i];
         }
       }
 
       // Generate single pages
       for (final SinglePage page in section.pages) {
-        final String html = await w.single(page);
+        final String html =
+            await writer.renderSectionSingle(section.name, page);
         outputs[page.permalinkRel] = html;
       }
+
+      // TODO render section tags
+      // TODO render section categories
     }
 
     // Generate tag list pages for site
     for (String tagName in site.tags.keys) {
       final Tag tag = site.tags[tagName];
-      final List<String> html = await _writer.fallback.list(tag);
+      final List<String> html = await writer.fallback.index(tag);
       if (html.length > 0) {
         outputs['/tags/${tagName}'] = html.first;
         for (int i = 0; i < html.length; i++) {
@@ -107,7 +109,7 @@ class Processor {
     // Generate category list pages for site
     for (String catName in site.categories.keys) {
       final Category cat = site.categories[catName];
-      final List<String> html = await _writer.fallback.list(cat);
+      final List<String> html = await writer.fallback.index(cat);
       if (html.length > 0) {
         outputs['/categories/${catName}'] = html.first;
         for (int i = 0; i < html.length; i++) {
@@ -116,7 +118,16 @@ class Processor {
       }
     }
 
-    // TODO generate home page
+    // Render site home/index page
+    {
+      final List<String> html = await writer.renderSiteIndex(site);
+      if (html.length > 0) {
+        outputs['/index.html'] = html.first;
+        for (int i = 0; i < html.length; i++) {
+          outputs['/index/${i + 1}.html'] = html[i];
+        }
+      }
+    }
 
     cache.clear();
 

@@ -259,7 +259,7 @@ class Category extends ListPage {
 }
 
 /// Model of the whole site
-class Site extends AnyPage {
+class Site extends ListPage {
   /// Site meta data
   final SiteMetaData meta;
 
