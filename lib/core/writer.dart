@@ -27,6 +27,16 @@ class Writer {
     return w.index(info);
   }
 
+  Future<List<String>> renderSiteCategory(Category cat) {
+    final TopWriter w = site ?? fallback;
+    return w.categories(cat);
+  }
+
+  Future<List<String>> renderSiteTag(Tag tag) {
+    final TopWriter w = site ?? fallback;
+    return w.tags(tag);
+  }
+
   Future<List<String>> renderSectionIndex(Section info) {
     final SectionWriter w = sections[info.name] ?? fallback;
     return w.index(info);
@@ -36,6 +46,16 @@ class Writer {
     final SectionWriter w = sections[section] ?? fallback;
     return w.single(info);
   }
+
+  Future<List<String>> renderSectionCategory(String section, Category cat) {
+    final SectionWriter w = sections[section] ?? fallback;
+    return w.categories(cat);
+  }
+
+  Future<List<String>> renderSectionTag(String section, Tag tag) {
+    final SectionWriter w = sections[section] ?? fallback;
+    return w.tags(tag);
+  }
 }
 
 abstract class TopWriter {
@@ -44,9 +64,9 @@ abstract class TopWriter {
   /// List pages include
   FutureOr<List<String>> index(ListPage page);
 
-  FutureOr<String> tags(Tag tags);
+  FutureOr<List<String>> tags(Tag tags);
 
-  FutureOr<String> categories(Category categories);
+  FutureOr<List<String>> categories(Category categories);
 }
 
 /// Contains logic to produce output formats (HTML, RSS, etc) from models for
@@ -60,15 +80,15 @@ abstract class SectionWriter implements TopWriter {
   /// Renders single pages of the section
   FutureOr<String> single(SinglePage page);
 
-  FutureOr<String> tags(Tag tags);
+  FutureOr<List<String>> tags(Tag tags);
 
-  FutureOr<String> categories(Category categories);
+  FutureOr<List<String>> categories(Category categories);
 }
 
 abstract class SiteWriter implements TopWriter {
   FutureOr<List<String>> index(covariant Site site);
 
-  FutureOr<String> tags(Tag tags);
+  FutureOr<List<String>> tags(Tag tags);
 
-  FutureOr<String> categories(Category categories);
+  FutureOr<List<String>> categories(Category categories);
 }

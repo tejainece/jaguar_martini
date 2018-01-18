@@ -90,18 +90,37 @@ class Processor {
         outputs[page.permalinkRel] = html;
       }
 
-      // TODO render section tags
-      // TODO render section categories
+      // Generate tag list pages for site
+      for (Tag tag in section.tags) {
+        final List<String> html = await writer.renderSiteTag(tag);
+        if (html.length > 0) {
+          outputs['/tags/${tag.name}.html'] = html.first;
+          for (int i = 0; i < html.length; i++) {
+            outputs['/tags/${tag.name}/${i+1}.html'] = html[i];
+          }
+        }
+      }
+
+      // Generate category list pages for site
+      for (Category cat in section.categories) {
+        final List<String> html = await writer.renderSiteCategory(cat);
+        if (html.length > 0) {
+          outputs['/categories/${cat.name}.html'] = html.first;
+          for (int i = 0; i < html.length; i++) {
+            outputs['/categories/${cat.name}/${i+1}.html'] = html[i];
+          }
+        }
+      }
     }
 
     // Generate tag list pages for site
     for (String tagName in site.tags.keys) {
       final Tag tag = site.tags[tagName];
-      final List<String> html = await writer.fallback.index(tag);
+      final List<String> html = await writer.renderSiteTag(tag);
       if (html.length > 0) {
-        outputs['/tags/${tagName}'] = html.first;
+        outputs['/tags/${tagName}.html'] = html.first;
         for (int i = 0; i < html.length; i++) {
-          outputs['${tag.permalinkRel}/page/${i+1}'] = html[i];
+          outputs['/tags/${tagName}/${i+1}.html'] = html[i];
         }
       }
     }
@@ -109,11 +128,11 @@ class Processor {
     // Generate category list pages for site
     for (String catName in site.categories.keys) {
       final Category cat = site.categories[catName];
-      final List<String> html = await writer.fallback.index(cat);
+      final List<String> html = await writer.renderSiteCategory(cat);
       if (html.length > 0) {
-        outputs['/categories/${catName}'] = html.first;
+        outputs['/categories/${catName}.html'] = html.first;
         for (int i = 0; i < html.length; i++) {
-          outputs['${cat.permalinkRel}/page/${i+1}'] = html[i];
+          outputs['/categories/${catName}/${i+1}.html'] = html[i];
         }
       }
     }
