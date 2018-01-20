@@ -22,37 +22,37 @@ class Writer {
 
   Writer(this.fallback, {this.sections: const {}, this.site});
 
-  Future<List<String>> renderSiteIndex(Site info) {
+  FutureOr<List<String>> renderSiteIndex(Site info) {
     final TopWriter w = site ?? fallback;
     return w.index(info);
   }
 
-  Future<List<String>> renderSiteCategory(Category cat) {
+  FutureOr<List<String>> renderSiteCategory(Category cat) {
     final TopWriter w = site ?? fallback;
     return w.categories(cat);
   }
 
-  Future<List<String>> renderSiteTag(Tag tag) {
+  FutureOr<List<String>> renderSiteTag(Tag tag) {
     final TopWriter w = site ?? fallback;
     return w.tags(tag);
   }
 
-  Future<List<String>> renderSectionIndex(Section info) {
+  FutureOr<List<String>> renderSectionIndex(Section info) {
     final SectionWriter w = sections[info.name] ?? fallback;
     return w.index(info);
   }
 
-  Future<String> renderSectionSingle(String section, SinglePage info) {
+  FutureOr<String> renderSectionSingle(String section, SinglePage info) {
     final SectionWriter w = sections[section] ?? fallback;
     return w.single(info);
   }
 
-  Future<List<String>> renderSectionCategory(String section, Category cat) {
+  FutureOr<List<String>> renderSectionCategory(String section, Category cat) {
     final SectionWriter w = sections[section] ?? fallback;
     return w.categories(cat);
   }
 
-  Future<List<String>> renderSectionTag(String section, Tag tag) {
+  FutureOr<List<String>> renderSectionTag(String section, Tag tag) {
     final SectionWriter w = sections[section] ?? fallback;
     return w.tags(tag);
   }
