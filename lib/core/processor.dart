@@ -12,9 +12,11 @@ class Processor {
   final SiteMetaData siteMeta;
 
   Processor(this.siteMeta, SectionWriter fallback,
-      {Map<String, SectionWriter> sectionWriters: const {},
+      {SiteWriter siteWriter,
+      Map<String, SectionWriter> sectionWriters: const {},
       List<ShortCode> shortcodes: const []})
-      : writer = new Writer(fallback, sections: sectionWriters) {
+      : writer =
+            new Writer(fallback, site: siteWriter, sections: sectionWriters) {
     addShortcodes(shortcodes);
   }
 
@@ -60,9 +62,18 @@ class Processor {
       final s = await c.collect();
 
       final posts = await s.map((CollectedPost p) {
-        p.content = renderMarkdown(p.content);
+        try {
+          p.content = renderMarkdown(p.content);
+        } on PostException catch (e) {
+          print(
+              'Error whiĺe processing post ${p.meta.slugs} in section ${p.meta.section}:');
+          if (e is LinedException) {
+            print('In line ${(e as LinedException).lineNum}');
+          }
+          print(e.message);
+        }
         return p;
-      });
+      }).where((p) => p != null);
 
       await composer.stream(posts);
     }
@@ -74,6 +85,8 @@ class Processor {
 
     // Render section
     for (final Section section in site.sections.values) {
+      print('Rendering section: ${section.name} ...');
+
       // Generate section list pages
       final List<String> html = await writer.renderSectionIndex(section);
       if (html.length > 0) {
@@ -168,6 +181,7 @@ class Processor {
 
     int startIdx = 0;
     ShortCodeCall scc;
+    int sccLineNum;
     int i = 0;
 
     for (; i < lines.length; i++) {
@@ -185,14 +199,21 @@ class Processor {
           outputs.add(markdownToHtml(string));
         }
       } else {
-        // TODO Should we throw on wrong use here?
-        if (!ShortCodeParser.isEndTagNamed(line, scc.name)) continue;
+        if (!ShortCodeParser.isEndTagNamed(line, scc.name)) {
+          if (ShortCodeParser.isTag(line))
+            throw new ShortcodeInsideShortcode(i);
+          continue;
+        }
 
         final string = lines.sublist(startIdx, i).join('\n');
 
         // Call shortcode
         final sc = _shortcodes[scc.name];
         outputs.add(sc.transform(scc.values, string));
+
+        scc = null;
+        startIdx = null;
+        sccLineNum = null;
 
         continue;
       }
@@ -202,10 +223,28 @@ class Processor {
       if (ShortCodeParser.isSingleLineTag(line)) {
         // Call shortcode
         final sc = _shortcodes[scc.name];
+
+        if (sc == null) {
+          throw new ShortcodeNotFound(scc.name, i);
+        }
+
         outputs.add(sc.transform(scc.values, null));
 
         scc = null;
         startIdx = null;
+        sccLineNum = null;
+      }
+    }
+
+    if (scc != null) {
+      throw new UnterminatedShortcode(scc.name, sccLineNum);
+    }
+
+    if (startIdx != null) {
+      final string = lines.sublist(startIdx, i).join('\n');
+      if (string.isNotEmpty) {
+        // Render markdown
+        outputs.add(markdownToHtml(string));
       }
     }
 

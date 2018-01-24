@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
-import 'package:rate_limit/rate_limit.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:jaguar_martini/collectors/collectors.dart';
 import 'package:jaguar_martini/models/models.dart';
 
@@ -18,7 +18,7 @@ class DirPostCollector implements PostCollector {
   StreamController<Null> _changeMan = new StreamController<Null>();
 
   Stream<Null> get onChange => _changeMan.stream.transform<Null>(
-      new Throttler<Null>(const Duration(seconds: 5), trailing: false));
+      new ThrottleStreamTransformer<Null>(const Duration(seconds: 5)));
 
   final _subs = <String, StreamSubscription>{};
 

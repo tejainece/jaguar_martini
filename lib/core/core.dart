@@ -10,6 +10,7 @@ import 'package:jaguar_martini/collectors/collectors.dart';
 import 'package:jaguar_martini/models/models.dart';
 
 part 'composer.dart';
+part 'exceptions.dart';
 part 'processor.dart';
 part 'writer.dart';
 part 'shortcode.dart';
