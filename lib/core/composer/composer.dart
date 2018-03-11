@@ -1,4 +1,6 @@
-part of jaguar.martini.core;
+import 'dart:async';
+import 'package:jaguar_martini/models/models.dart';
+
 
 /// Receives a [Stream] of [CollectedPost]s and builds the site model from it
 ///

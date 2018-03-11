@@ -1,4 +1,4 @@
-part of jaguar.martini.core;
+library jaguar.martini.core.shortcut;
 
 class ShortCodeCall {
   final String name;

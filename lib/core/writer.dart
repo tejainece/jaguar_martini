@@ -1,92 +1,54 @@
 part of jaguar.martini.core;
 
-typedef FutureOr<String> SiteIndexRenderer(Site page);
-
-typedef FutureOr<String> SiteTagsRenderer(Tag page);
-
-typedef FutureOr<String> SiteCategoriesRenderer(Category page);
-
-typedef FutureOr<String> SingleRenderer(SinglePage page);
-
 /// Contains logic to produce output formats (HTML, RSS, etc) from models
-class Writer {
-  final SiteWriter site;
-
-  /// Fallback section renderer
-  ///
-  /// Used when [sections] does not have an entry for the rendered section
-  final SectionWriter fallback;
+class _Renderer {
+  final SiteRenderer site;
 
   /// Map of section name to section's writer
-  final Map<String, SectionWriter> sections;
+  final Map<String, SectionRenderer> sections;
 
-  Writer(this.fallback, {this.sections: const {}, this.site});
+  _Renderer(this.site, {this.sections: const {}});
 
-  FutureOr<List<String>> renderSiteIndex(Site info) {
-    final TopWriter w = site ?? fallback;
-    return w.index(info);
+  FutureOr<List<String>> siteIndex(Site info) => site.index(info);
+
+  FutureOr<List<String>> siteCategory(Category cat) => site.categories(cat);
+
+  FutureOr<List<String>> siteTag(Tag tag) => site.tags(tag);
+
+  FutureOr<List<String>> sectionIndex(Section info) {
+    if (sections.containsKey(info.name)) {
+      return sections[info.name].index(info);
+    }
+    return site.sectionIndex(info);
   }
 
-  FutureOr<List<String>> renderSiteCategory(Category cat) {
-    final TopWriter w = site ?? fallback;
-    return w.categories(cat);
+  FutureOr<String> sectionSingle(String section, SinglePage info) {
+    if (sections.containsKey(section)) {
+      return sections[section].single(info);
+    }
+    return site.sectionSingle(info);
   }
 
-  FutureOr<List<String>> renderSiteTag(Tag tag) {
-    final TopWriter w = site ?? fallback;
-    return w.tags(tag);
+  FutureOr<List<String>> sectionCategory(String section, Category cat) {
+    if (sections.containsKey(section)) {
+      return sections[section].categories(cat);
+    }
+    return site.sectionCategory(cat);
   }
 
-  FutureOr<List<String>> renderSectionIndex(Section info) {
-    final SectionWriter w = sections[info.name] ?? fallback;
-    return w.index(info);
-  }
-
-  FutureOr<String> renderSectionSingle(String section, SinglePage info) {
-    final SectionWriter w = sections[section] ?? fallback;
-    return w.single(info);
-  }
-
-  FutureOr<List<String>> renderSectionCategory(String section, Category cat) {
-    final SectionWriter w = sections[section] ?? fallback;
-    return w.categories(cat);
-  }
-
-  FutureOr<List<String>> renderSectionTag(String section, Tag tag) {
-    final SectionWriter w = sections[section] ?? fallback;
-    return w.tags(tag);
+  FutureOr<List<String>> sectionTag(String section, Tag tag) {
+    if (sections.containsKey(section)) {
+      return sections[section].tags(tag);
+    }
+    return site.sectionTag(tag);
   }
 }
 
-abstract class TopWriter {
+abstract class TopRenderer {
   /// Renders list pages of the section
   ///
   /// List pages include
   FutureOr<List<String>> index(ListPage page);
-
-  FutureOr<List<String>> tags(Tag tags);
-
-  FutureOr<List<String>> categories(Category categories);
-}
-
-/// Contains logic to produce output formats (HTML, RSS, etc) from models for
-/// a section
-abstract class SectionWriter implements TopWriter {
-  /// Renders list pages of the section
-  ///
-  /// List pages include
-  FutureOr<List<String>> index(covariant Section page);
-
-  /// Renders single pages of the section
-  FutureOr<String> single(SinglePage page);
-
-  FutureOr<List<String>> tags(Tag tags);
-
-  FutureOr<List<String>> categories(Category categories);
-}
-
-abstract class SiteWriter implements TopWriter {
-  FutureOr<List<String>> index(covariant Site site);
 
   FutureOr<List<String>> tags(Tag tags);
 
