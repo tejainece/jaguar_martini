@@ -33,14 +33,14 @@ class _Renderer {
     if (sections.containsKey(section)) {
       return sections[section].categories(cat);
     }
-    return site.sectionCategory(cat);
+    return site.sectionCategories(cat);
   }
 
   FutureOr<List<String>> sectionTag(String section, Tag tag) {
     if (sections.containsKey(section)) {
       return sections[section].tags(tag);
     }
-    return site.sectionTag(tag);
+    return site.sectionTags(tag);
   }
 }
 
