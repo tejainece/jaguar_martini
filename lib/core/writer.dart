@@ -5,9 +5,9 @@ class _Renderer {
   final SiteRenderer site;
 
   /// Map of section name to section's writer
-  final Map<String, SectionRenderer> sections;
+  Map<String, SectionRenderer> get sections => site.sections;
 
-  _Renderer(this.site, {this.sections: const {}});
+  _Renderer(this.site);
 
   FutureOr<List<String>> siteIndex(Site info) => site.index(info);
 

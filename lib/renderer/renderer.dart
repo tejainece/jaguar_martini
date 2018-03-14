@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:jaguar_martini/models/models.dart';
+import 'package:jaguar_martini/shortcode/shortcode.dart';
 
 /// Contains logic to produce output formats (HTML, RSS, etc) from
 /// models for a section
@@ -18,6 +19,10 @@ abstract class SectionRenderer {
 }
 
 abstract class SiteRenderer {
+  List<ShortCode> get shortcodes;
+
+  Map<String, SectionRenderer> get sections;
+
   FutureOr<List<String>> index(Site site);
 
   FutureOr<List<String>> tags(Tag tags);

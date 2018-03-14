@@ -6,3 +6,4 @@ export 'package:jaguar_martini/shortcode/shortcode.dart';
 export 'package:jaguar_martini/renderer/renderer.dart';
 export 'package:jaguar_martini/core/core.dart';
 export 'package:jaguar_martini/server/gencon.dart';
+export 'package:jaguar_martini/server/fs_writer.dart';

@@ -16,6 +16,8 @@ class CollectorError {
 
   const CollectorError(this.path, this.message);
 
+  String toString() => '$path: $message';
+
   static CollectorError frontMatter(String path) =>
       new CollectorError(path, 'Invalid front matter!');
 }

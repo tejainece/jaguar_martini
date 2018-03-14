@@ -10,6 +10,19 @@ class ShortCodeCall {
   String toString() => 'ShortCodeCall($name, $values)';
 }
 
+Map<String, ShortCode> composeShortcodes(List<ShortCode> shortcodes) {
+  final ret = <String, ShortCode>{};
+
+  for (ShortCode shortcode in shortcodes) {
+    if (ret.containsKey(shortcode.name)) {
+      throw new ArgumentError.value(shortcode, 'shortcode',
+          'Shortcode with name ${shortcode.name} already exists!');
+    }
+    ret[shortcode.name] = shortcode;
+  }
+  return ret;
+}
+
 /// Interface for short-code
 abstract class ShortCode {
   /// Name of short-code

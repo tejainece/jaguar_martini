@@ -62,7 +62,7 @@ class PostMeta {
     final String date = yaml['date'];
     final bool draft = yaml['draft'];
     final String linkTitle = yaml['linkTitle'];
-    final int weight = int.parse(yaml['weight'] ?? '', onError: (_) => null);
+    final int weight = yaml['weight'];
 
     // TODO check types of these
 
