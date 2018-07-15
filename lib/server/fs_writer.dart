@@ -34,10 +34,10 @@ class FsWriter {
     path = p.join(
         out.path, p.joinAll(p.split(path)..removeWhere((s) => s == '/')));
     FileSystemEntityType type = await FileSystemEntity.type(path);
-    if (type == FileSystemEntityType.DIRECTORY) {
+    if (type == FileSystemEntityType.directory) {
       await new Directory(path).delete(recursive: true);
-    } else if (type == FileSystemEntityType.FILE ||
-        type == FileSystemEntityType.LINK) {
+    } else if (type == FileSystemEntityType.file ||
+        type == FileSystemEntityType.link) {
       await new File(path).delete(recursive: true);
     }
 

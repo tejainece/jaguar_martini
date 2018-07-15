@@ -2,7 +2,7 @@ library jaguar.martini.core;
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:markd/markdown.dart';
+import 'package:markdown/markdown.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:jaguar_martini/collectors/collectors.dart';
 import 'composer/composer.dart';

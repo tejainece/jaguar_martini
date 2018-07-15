@@ -70,7 +70,7 @@ class DirPostCollector implements PostCollector {
 
     if (sepIdx == -1) return null;
 
-    Map<String, dynamic> yaml;
+    YamlMap yaml;
 
     final slugs = getSlug(_dir.path, file.path);
 

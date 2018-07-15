@@ -51,7 +51,7 @@ class PostMeta {
       this.params});
 
   factory PostMeta.yaml(
-      String section, Map<String, dynamic> yaml, List<String> slugs) {
+      String section, Map yaml, List<String> slugs) {
     final String title = yaml['title'];
     final String description = yaml['description'];
     final List<String> categories = yaml['categories'];
