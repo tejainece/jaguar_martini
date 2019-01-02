@@ -95,7 +95,7 @@ class SinglePage extends AnyPage {
   }
 
   String makeRelPermalink(String permalinkFormat) {
-    final List<String> segs = splitPathToSegments(permalinkFormat);
+    final List<String> segs = pathToSegments(permalinkFormat);
 
     final output = <String>[];
 

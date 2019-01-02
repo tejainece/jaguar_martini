@@ -9,8 +9,8 @@ environment:
   sdk: ">=2.0.0-dev.63.0 <3.0.0"
 
 dependencies:
-  jaguar: ^2.1.1
-  jaguar_cache: ^0.2.1
+  jaguar: ^2.4.1
+  jaguar_cache: ^2.1.2
   rxdart: ^0.18.0
   yaml: ^2.1.12
   stream_transform: ^0.0.14
@@ -19,5 +19,5 @@ dependencies:
 
 dev_dependencies:
   test: ^1.2.0
-  stencil: ^0.0.2
+  stencil: ^2.1.0
 

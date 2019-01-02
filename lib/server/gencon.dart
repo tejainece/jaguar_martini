@@ -9,7 +9,7 @@ import 'package:jaguar_martini/jaguar_martini.dart';
 import 'package:path/path.dart' as p;
 
 /// Caches the responses as they are generated and serves the cached requests
-class GeneratedHandler implements RequestHandler {
+class GeneratedHandler {
   final String base;
 
   final Builder builder;
@@ -44,26 +44,24 @@ class GeneratedHandler implements RequestHandler {
     }
   }
 
-  FutureOr<Response> handleRequest(Context ctx, {String prefix: ''}) {
-    if (ctx.method != 'GET') return null;
+  void call(Context ctx) {
+    final String path = ctx.path;
 
-    final String path = prefix + '/' + p.joinAll(ctx.pathSegments);
-    Response ret;
     try {
-      ret = cache.read(path);
+      ctx.response = cache.read(path);
     } catch (e) {
       if (e != cacheMiss) rethrow;
     }
 
-    if (ret != null) return ret;
+    if (ctx.response != null) return;
 
     try {
-      ret = cache.read(path + '/index.html');
+      ctx.response = cache.read(path + '/index.html');
     } catch (e) {
       if (e != cacheMiss) rethrow;
     }
 
-    return ret;
+    return;
   }
 }
 
