@@ -29,11 +29,5 @@ abstract class SiteRenderer {
 
   FutureOr<List<String>> categories(Category categories);
 
-  FutureOr<List<String>> sectionIndex(Section info);
-
-  FutureOr<String> sectionSingle(SinglePage info);
-
-  FutureOr<List<String>> sectionCategories(Category cat);
-
-  FutureOr<List<String>> sectionTags(Tag tag);
+  SectionRenderer get defaultSectionRenderer;
 }

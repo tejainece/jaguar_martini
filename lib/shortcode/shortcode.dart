@@ -15,7 +15,7 @@ Map<String, ShortCode> composeShortcodes(List<ShortCode> shortcodes) {
 
   for (ShortCode shortcode in shortcodes) {
     if (ret.containsKey(shortcode.name)) {
-      throw new ArgumentError.value(shortcode, 'shortcode',
+      throw ArgumentError.value(shortcode, 'shortcode',
           'Shortcode with name ${shortcode.name} already exists!');
     }
     ret[shortcode.name] = shortcode;
@@ -53,7 +53,7 @@ abstract class ShortCodeParser {
 
   /// Checks if a [line] is a short-code end tag with short-code [name]
   static bool isEndTagNamed(String line, String name) {
-    return line.startsWith(new RegExp(r'{{<[ \t]*/' + name + r'[ \t]*>}}$'));
+    return line.startsWith(RegExp(r'{{<[ \t]*/' + name + r'[ \t]*>}}$'));
   }
 
   static ShortCodeCall parse(String line) {
@@ -64,7 +64,7 @@ abstract class ShortCodeParser {
 
     core = core.trim();
 
-    final int nameIdx = core.indexOf(new RegExp('[ \t]'));
+    final int nameIdx = core.indexOf(RegExp('[ \t]'));
     final String name = core.substring(0, nameIdx);
 
     core = core.substring(nameIdx).trim();
@@ -75,13 +75,13 @@ abstract class ShortCodeParser {
       core = findArg(core, values).trim();
     }
 
-    return new ShortCodeCall(name, values);
+    return ShortCodeCall(name, values);
   }
 
   static String finaArgName(String core) {
-    final Match match = new RegExp(r'([a-zA-Z0-9_]+)=').firstMatch(core);
+    final Match match = RegExp(r'([a-zA-Z0-9_]+)=').firstMatch(core);
     if (match == null) {
-      throw new Exception('Invalid shortcode! (1)');
+      throw Exception('Invalid shortcode! (1)');
     }
 
     return match.group(1);
@@ -89,16 +89,16 @@ abstract class ShortCodeParser {
 
   static String findArgValue(String core) {
     if (core.startsWith('"')) {
-      final Match match = new RegExp(r'("[^\s]+")[\s]?').firstMatch(core);
+      final Match match = RegExp(r'("[^\s]+")[\s]?').firstMatch(core);
       if (match == null) {
-        throw new Exception('Invalid shortcode! (2)');
+        throw Exception('Invalid shortcode! (2)');
       }
 
       return match.group(1);
     } else {
-      final Match match = new RegExp(r'([^\s]+)[\s]?').firstMatch(core);
+      final Match match = RegExp(r'([^\s]+)[\s]?').firstMatch(core);
       if (match == null) {
-        throw new Exception('Invalid shortcode! (3)');
+        throw Exception('Invalid shortcode! (3)');
       }
 
       return match.group(1);

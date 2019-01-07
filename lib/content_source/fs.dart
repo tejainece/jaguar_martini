@@ -3,22 +3,22 @@ import 'dart:async';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
-import 'package:jaguar_martini/collectors/collectors.dart';
+import 'package:jaguar_martini/content_source/content_source.dart';
 import 'package:jaguar_martini/models/models.dart';
 
 /// Reads all posts from specified directory and aggregates them
-class DirPostCollector implements PostCollector {
+class FsContentSource implements ContentSource {
   final Directory _dir;
 
-  DirPostCollector(this._dir);
+  FsContentSource(this._dir);
 
   /// Path of the directory
   String get path => _dir.path;
 
-  StreamController<Null> _changeMan = new StreamController<Null>();
+  StreamController<Null> _changeMan = StreamController<Null>();
 
   Stream<Null> get onChange => _changeMan.stream.transform<Null>(
-      new ThrottleStreamTransformer<Null>(const Duration(seconds: 5)));
+      ThrottleStreamTransformer<Null>(const Duration(seconds: 5)));
 
   final _subs = <String, StreamSubscription>{};
 
@@ -26,14 +26,14 @@ class DirPostCollector implements PostCollector {
 
   /// Performs the collection
   Future<Stream<CollectedPost>> collect() async {
-    while (_working) await new Future.delayed(new Duration(milliseconds: 500));
+    while (_working) await Future.delayed(Duration(milliseconds: 500));
     _working = true;
     for (final sc in _subs.values) {
       await sc.cancel();
     }
     _subs.clear();
 
-    final controller = new StreamController<CollectedPost>();
+    final controller = StreamController<CollectedPost>();
 
     _collectDir(_dir, controller).then((_) async {
       controller.close();
@@ -83,8 +83,8 @@ class DirPostCollector implements PostCollector {
 
     slugs[slugs.length - 1] = p.basenameWithoutExtension(slugs.last);
 
-    final PostMeta meta = new PostMeta.yaml(slugs.first, yaml, slugs);
-    return new CollectedPost(meta, lines.sublist(sepIdx + 1).join('\n'));
+    final PostMeta meta = PostMeta.yaml(slugs.first, yaml, slugs);
+    return CollectedPost(meta, lines.sublist(sepIdx + 1).join('\n'));
   }
 
   static List<String> getSlug(String contentPath, String postPath) {

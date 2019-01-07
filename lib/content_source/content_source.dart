@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:jaguar_martini/jaguar_martini.dart';
 
 /// Reads all posts from all sources and aggregates them
-abstract class PostCollector {
+abstract class ContentSource {
   Stream<Null> get onChange;
 
   /// performs the collection
@@ -19,5 +19,5 @@ class CollectorError {
   String toString() => '$path: $message';
 
   static CollectorError frontMatter(String path) =>
-      new CollectorError(path, 'Invalid front matter!');
+      CollectorError(path, 'Invalid front matter!');
 }

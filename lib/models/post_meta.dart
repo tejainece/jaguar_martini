@@ -50,12 +50,12 @@ class PostMeta {
       this.weight,
       this.params});
 
-  factory PostMeta.yaml(
-      String section, Map yaml, List<String> slugs) {
+  factory PostMeta.yaml(String section, Map yaml, List<String> slugs) {
     final String title = yaml['title'];
     final String description = yaml['description'];
-    final List<String> categories = yaml['categories'];
-    final List<String> tags = yaml['tags'];
+    final List<String> categories =
+        (yaml['categories'] as List)?.cast<String>();
+    final List<String> tags = (yaml['tags'] as List)?.cast<String>();
     final String slug = yaml['slug'];
     final String url = yaml['url'];
     final String permalink = yaml['permalink'];

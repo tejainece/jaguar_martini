@@ -1,28 +1,28 @@
 part of jaguar.martini.core;
 
 class Builder {
-  final List<PostCollector> _collectors;
+  final List<ContentSource> _contentSources;
 
   final Map<String, ShortCode> _shortcodes;
 
-  final _Renderer _renderer;
+  final _Writer _renderer;
 
   final SiteMetaData siteMeta;
 
-  Builder(this.siteMeta, SiteRenderer renderer, this._collectors)
-      : _renderer = new _Renderer(renderer),
+  Builder(this.siteMeta, SiteRenderer renderer, this._contentSources)
+      : _renderer = _Writer(renderer),
         _shortcodes = composeShortcodes(renderer.shortcodes) {}
 
-  Stream<Map<String, String>> get watcher => _collectors.first.onChange
+  Stream<Map<String, String>> get watcher => _contentSources.first.onChange
       .transform(
-          mergeAll(_collectors.sublist(1).map((c) => c.onChange).toList()))
-      .transform(debounce(new Duration(seconds: 1)))
+          mergeAll(_contentSources.sublist(1).map((c) => c.onChange).toList()))
+      .transform(debounce(Duration(seconds: 1)))
       .asyncMap((_) async => await compile());
 
   Future<Map<String, String>> compile() async {
-    final composer = new Composer(siteMeta);
+    final composer = Composer(siteMeta);
 
-    for (final c in _collectors) {
+    for (final c in _contentSources) {
       final s = await c.collect();
 
       final posts = await s.map((CollectedPost p) {
@@ -63,7 +63,7 @@ class Builder {
       // Generate single pages
       for (final SinglePage page in section.pages) {
         final String html = await _renderer.sectionSingle(section.name, page);
-        outputs[page.permalinkRel] = html;
+        outputs[page.permalinkRel + ".html"] = html;
       }
 
       // Generate tag list pages for site
@@ -157,7 +157,7 @@ class Builder {
       } else {
         if (!ShortCodeParser.isEndTagNamed(line, scc.name)) {
           if (ShortCodeParser.isTag(line))
-            throw new ShortcodeInsideShortcode(i);
+            throw ShortcodeInsideShortcode(i);
           continue;
         }
 
@@ -181,7 +181,7 @@ class Builder {
         final sc = _shortcodes[scc.name];
 
         if (sc == null) {
-          throw new ShortcodeNotFound(scc.name, i);
+          throw ShortcodeNotFound(scc.name, i);
         }
 
         outputs.add(sc.transform(scc.values, null));
@@ -193,7 +193,7 @@ class Builder {
     }
 
     if (scc != null) {
-      throw new UnterminatedShortcode(scc.name, sccLineNum);
+      throw UnterminatedShortcode(scc.name, sccLineNum);
     }
 
     if (startIdx != null) {
